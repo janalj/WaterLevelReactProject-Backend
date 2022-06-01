@@ -5,27 +5,32 @@
 const express = require("express");
 // create object to interface with express
 const app = express();
+const fetch = require("cross-fetch");
 
+let currentDate = {
+    year: 2022,
+    month: 04
+}
 // Code in this section sets up an express pipeline
+app.post("/query/postDate", (req, res) =>{
+  console.log("'/postDate': sending Response")
+  currentDate.year = req.body['year'];
+  currentDate.month = req.body['month'];
+  return res.send('recieved POST'); 
+});
 
 // three different schools to look up
 const stations = [
-  "Shasta",
-  "Ororville", 
-  "Trinity Lake",
-  "New Melones",
-  "San Luis",
-  "Don Pedro",
-  "Berressa"  
+  "SHA", "ORO", "CLE", "NML", "LUS", "DNP", "BER"  
 ];
 //Station Ids: SHA, ORO, CLE, NML, LUS, DNP, BER 
 
 app.get("/query/getData", async function(request, response, next) {
-  
+  //this line is not printing, request is nor coming in?
   console.log("getting data from CDEC...");
 
-  let year = request.body['year'];
-  let month = request.body['month'];
+  let year = currentDate.year;
+  let month = currentDate.month;
    // return an array of results
   waterData = [];
   // get water level for every station
@@ -34,6 +39,8 @@ app.get("/query/getData", async function(request, response, next) {
     waterData.push(data);
   }
 
+  console.log(waterData);
+    
   response.json(waterData);
 });
 
