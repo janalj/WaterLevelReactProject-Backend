@@ -58,7 +58,7 @@ async function getData(station,year,month) {
   
   let fetch_response = await fetch(api_url);
   let apiData = {"stationId":"SHA","durCode":"M","SENSOR_NUM":15,"sensorType":"STORAGE","date":"2022-1-1 00:00","obsDate":"2022-1-1 00:00","value":1621440,"dataFlag":" ","units":"AF"};
-  // apiData = await fetch_response.json();
+  // let apiData = await fetch_response.json();
   // apiData = apiData.results[0];
 
   let stationId = apiData['stationId'];
