@@ -6,6 +6,7 @@ const express = require("express");
 // create object to interface with express
 const app = express();
 const fetch = require("cross-fetch");
+const bodyParser = require('body-parser');
 
 let currentDate = {
     year: 2022,
@@ -13,9 +14,10 @@ let currentDate = {
 }
 // Code in this section sets up an express pipeline
 app.post("/query/postDate", (req, res) =>{
-  console.log("'/postDate': sending Response")
-  currentDate.year = req.body['year'];
-  currentDate.month = req.body['month'];
+  console.log("'/postDate': sending Response");
+  console.log("Post request body", req.body);
+  currentDate.year = req.body.year;
+  currentDate.month = req.body.month;
   return res.send('recieved POST'); 
 });
 
@@ -50,10 +52,13 @@ async function getData(station,year,month) {
 
   date = year + '-' + month + '-01';
   const api_url = `https://cdec.water.ca.gov/dynamicapp/req/JSONDataServlet?Stations=${station}&SensorNums=15&dur_code=M&Start=${date}&End=${date}`;
+
+  console.log(api_url);
   
   let fetch_response = await fetch(api_url);
-  let apiData = await fetch_response.json();
-  apiData = apiData.results[0];
+  let apiData = {"stationId":"SHA","durCode":"M","SENSOR_NUM":15,"sensorType":"STORAGE","date":"2022-1-1 00:00","obsDate":"2022-1-1 00:00","value":1621440,"dataFlag":" ","units":"AF"};
+  // apiData = await fetch_response.json();
+  // apiData = apiData.results[0];
 
   let stationId = apiData['stationId'];
   let waterLevel = apiData['value'];
@@ -65,6 +70,8 @@ async function getData(station,year,month) {
 
 }
 
+// Get JSON out of HTTP request body, JSON.parse, and put object into req.body
+app.use(bodyParser.json());
 
 // print info about incoming HTTP request 
 // for debugging
@@ -78,7 +85,7 @@ app.use(function(req, res, next) {
 
 // respond to all AJAX querires with this message
 app.use(function(req, res, next) {
-  req.json({msg: "No such AJAX request"})
+  res.json({msg: "No such AJAX request"})
 });
 
 // end of pipeline specification
