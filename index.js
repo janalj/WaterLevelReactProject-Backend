@@ -3,17 +3,18 @@
 
 // include express
 const express = require("express");
+const bodyParser = require('body-parser');
+const fetch = require("cross-fetch");
+
 // create object to interface with express
 const app = express();
-const fetch = require("cross-fetch");
-const bodyParser = require('body-parser');
 
 let currentDate = {
     year: 2022,
     month: 04
 }
 // Code in this section sets up an express pipeline
-app.post("/query/postDate", (req, res) =>{
+app.post("/postDate", (req, res) =>{
   console.log("'/postDate': sending Response");
   console.log("Post request body", req.body);
   currentDate.year = req.body.year;
@@ -27,7 +28,7 @@ const stations = [
 ];
 //Station Ids: SHA, ORO, CLE, NML, LUS, DNP, BER 
 
-app.get("/query/getData", async function(request, response, next) {
+app.get("/getData", async function(request, response, next) {
   //this line is not printing, request is nor coming in?
   console.log("getting data from CDEC...");
 
