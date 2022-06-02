@@ -8,13 +8,16 @@ const fetch = require("cross-fetch");
 
 // create object to interface with express
 const app = express();
+app.use(express.json());
+// Get JSON out of HTTP request body, JSON.parse, and put object into req.body
+
 
 let currentDate = {
     year: 2022,
     month: 04
 }
 // Code in this section sets up an express pipeline
-app.post("/postDate", (req, res) =>{
+app.post("/query/postDate", (req, res) =>{
   console.log("'/postDate': sending Response");
   console.log("Post request body", req.body);
   currentDate.year = req.body.year;
@@ -28,7 +31,7 @@ const stations = [
 ];
 //Station Ids: SHA, ORO, CLE, NML, LUS, DNP, BER 
 
-app.get("/getData", async function(request, response, next) {
+app.get("/query/getData", async function(request, response, next) {
   //this line is not printing, request is nor coming in?
   console.log("getting data from CDEC...");
 
@@ -42,7 +45,7 @@ app.get("/getData", async function(request, response, next) {
     waterData.push(data);
   }
 
-  console.log(waterData);
+  console.log("waterData",waterData);
     
   response.json(waterData);
 });
@@ -57,12 +60,15 @@ async function getData(station,year,month) {
   console.log(api_url);
   
   let fetch_response = await fetch(api_url);
-  let apiData = {"stationId":"SHA","durCode":"M","SENSOR_NUM":15,"sensorType":"STORAGE","date":"2022-1-1 00:00","obsDate":"2022-1-1 00:00","value":1621440,"dataFlag":" ","units":"AF"};
-  // let apiData = await fetch_response.json();
-  // apiData = apiData.results[0];
+  // let apiData = {"stationId":"SHA","durCode":"M","SENSOR_NUM":15,"sensorType":"STORAGE","date":"2022-1-1 00:00","obsDate":"2022-1-1 00:00","value":1621440,"dataFlag":" ","units":"AF"};
+  let apiData = await fetch_response.json();
+  console.log("apiData",apiData);
+  let firstEle = apiData[0];
 
-  let stationId = apiData['stationId'];
-  let waterLevel = apiData['value'];
+  console.log(firstEle);
+
+  let stationId = firstEle['stationId'];
+  let waterLevel = firstEle['value'];
   
   return{
     station: stationId,
@@ -71,8 +77,7 @@ async function getData(station,year,month) {
 
 }
 
-// Get JSON out of HTTP request body, JSON.parse, and put object into req.body
-app.use(bodyParser.json());
+
 
 // print info about incoming HTTP request 
 // for debugging
@@ -85,9 +90,9 @@ app.use(function(req, res, next) {
 // is only for AJAX requests
 
 // respond to all AJAX querires with this message
-app.use(function(req, res, next) {
-  res.json({msg: "No such AJAX request"})
-});
+// app.use(function(req, res, next) {
+//   res.json({msg: "No such AJAX request"})
+// });
 
 // end of pipeline specification
 
